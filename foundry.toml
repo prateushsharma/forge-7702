@@ -10,9 +10,6 @@ remappings = [
     "forge-7702/=src/"
 ]
 
-[profile.ci]
-fuzz = { runs = 1000 }
-verbosity = 2
 
 [fmt]
 line_length = 100

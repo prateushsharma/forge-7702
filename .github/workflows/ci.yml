@@ -31,8 +31,8 @@ jobs:
       - name: Run tests
         run: forge test -vv
 
-      - name: Run fuzz tests (CI profile)
-        run: forge test --profile ci -vv
+      - name: Run fuzz tests (higher runs)
+        run: forge test -vv --fuzz-runs 1000
 
       - name: Check formatting
         run: forge fmt --check
