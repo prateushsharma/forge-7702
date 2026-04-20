@@ -1,0 +1,42 @@
+{
+  "name": "forge-7702",
+  "version": "1.0.0",
+  "description": "A Foundry testing library for EIP-7702 — one import, one line.",
+  "keywords": [
+    "eip-7702",
+    "foundry",
+    "solidity",
+    "ethereum",
+    "smart-contracts",
+    "testing",
+    "pectra",
+    "session-keys",
+    "delegation"
+  ],
+  "author": "prateushsharma",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prateushsharma/forge-7702.git"
+  },
+  "bugs": {
+    "url": "https://github.com/prateushsharma/forge-7702/issues"
+  },
+  "homepage": "https://github.com/prateushsharma/forge-7702#readme",
+  "files": [
+    "src/**/*.sol",
+    "foundry.toml",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "forge test -vv",
+    "test:gas": "forge test -vv --gas-report",
+    "build": "forge build",
+    "lint": "forge fmt --check",
+    "fmt": "forge fmt"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

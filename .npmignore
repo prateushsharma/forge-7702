@@ -1,0 +1,16 @@
+# Development
+test/
+script/
+cache/
+out/
+.github/
+
+# Config
+.env
+.env.*
+foundry.toml
+
+# Misc
+*.log
+.DS_Store
+node_modules/
