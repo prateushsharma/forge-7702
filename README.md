@@ -11,7 +11,7 @@ EIP-7702 (included in the Ethereum Pectra hard fork) lets a regular EOA temporar
 ## Installation
 
 ```bash
-forge install yourname/forge-7702
+forge install prateushsharma/forge-7702
 ```
 
 Add to your `foundry.toml`:
