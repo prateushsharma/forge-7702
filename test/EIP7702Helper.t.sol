@@ -14,6 +14,7 @@ import {Auth7702} from "../src/Auth7702.sol";
 contract SimpleLogic {
     uint256 public value;
 
+      receive() external payable {}
     function setValue(uint256 _value) external {
         value = _value;
     }
@@ -124,10 +125,18 @@ contract EIP7702HelperTest is Test, SessionKeyHelper {
         assertEq(code[2], bytes1(0x00));
     }
 
-    function test_delegate_revertsOnZeroAddress() public {
-        vm.expectRevert("EIP7702Helper: logic cannot be zero address");
-        delegate(OWNER_PK, address(0));
+   function test_delegate_revertsOnZeroAddress() public {
+    try this.external_delegate_zero() {
+        fail("expected revert");
+    } catch Error(string memory reason) {
+        assertEq(reason, "EIP7702Helper: logic cannot be zero address");
     }
+}
+
+function external_delegate_zero() external {
+    delegate(OWNER_PK, address(0));
+}
+
 
     function test_isDelegatedTo_true() public {
         address eoa = delegate(OWNER_PK, address(simpleLogic));
@@ -232,10 +241,17 @@ contract EIP7702HelperTest is Test, SessionKeyHelper {
         assertEq(simpleLogic.value(), 42);
     }
 
-    function test_executeAs_revertsIfNotDelegated() public {
-        vm.expectRevert("EIP7702Helper: EOA is not delegated");
-        executeAs(OWNER_PK, address(simpleLogic), abi.encodeCall(SimpleLogic.setValue, (1)));
+   function test_executeAs_revertsIfNotDelegated() public {
+    try this.external_executeAs_notDelegated() {
+        fail("expected revert");
+    } catch Error(string memory reason) {
+        assertEq(reason, "EIP7702Helper: EOA is not delegated");
     }
+}
+
+function external_executeAs_notDelegated() external {
+    executeAs(OWNER_PK, address(simpleLogic), abi.encodeCall(SimpleLogic.setValue, (1)));
+}
 
     function test_executeAs_withValue_sendsEth() public {
         delegate(OWNER_PK, address(simpleLogic));
