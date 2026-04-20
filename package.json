@@ -1,6 +1,6 @@
 {
   "name": "forge-7702",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Foundry testing library for EIP-7702 — one import, one line.",
   "keywords": [
     "eip-7702",
