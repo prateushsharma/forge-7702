@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.20;
 
-import {EIP7702Helper} from "./EIP7702Helper.sol";
-import {Auth7702} from "./Auth7702.sol";
+import { EIP7702Helper } from "./EIP7702Helper.sol";
+import { Auth7702 } from "./Auth7702.sol";
 
 /// @title SessionKeyHelper
 /// @notice High-level helpers for session key testing on top of EIP7702Helper.
@@ -11,7 +11,6 @@ import {Auth7702} from "./Auth7702.sol";
 /// @dev    Inheritance chain:
 ///           forge-std/Test  ←  EIP7702Helper  ←  SessionKeyHelper  ←  YourTest
 abstract contract SessionKeyHelper is EIP7702Helper {
-
     // -------------------------------------------------------------------------
     // Structs
     // -------------------------------------------------------------------------
@@ -29,12 +28,12 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     struct SessionConfig {
         address sessionKey;
         address target;
-        bytes4  selector;
+        bytes4 selector;
         address tokenIn;
         address tokenOut;
         uint256 maxAmount;
-        uint48  validAfter;
-        uint48  validUntil;
+        uint48 validAfter;
+        uint48 validUntil;
         uint256 maxCalls;
     }
 
@@ -45,7 +44,7 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     struct Call {
         address target;
         uint256 value;
-        bytes   data;
+        bytes data;
     }
 
     /// @notice A signed execution request from a session key.
@@ -53,7 +52,7 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     /// @param nonce     Session nonce — prevents replay within the session.
     /// @param deadline  Timestamp after which this request is invalid.
     struct ExecutionRequest {
-        Call[]  calls;
+        Call[] calls;
         uint256 nonce;
         uint256 deadline;
     }
@@ -61,7 +60,7 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     /// @notice A signed execution request ready to submit.
     struct SignedExecutionRequest {
         ExecutionRequest req;
-        uint8   v;
+        uint8 v;
         bytes32 r;
         bytes32 s;
     }
@@ -78,9 +77,8 @@ abstract contract SessionKeyHelper is EIP7702Helper {
         "SessionConfig(address sessionKey,address target,bytes4 selector,address tokenIn,address tokenOut,uint256 maxAmount,uint48 validAfter,uint48 validUntil,uint256 maxCalls)"
     );
 
-    bytes32 private constant _CALL_TYPEHASH = keccak256(
-        "Call(address target,uint256 value,bytes data)"
-    );
+    bytes32 private constant _CALL_TYPEHASH =
+        keccak256("Call(address target,uint256 value,bytes data)");
 
     bytes32 private constant _EXECUTION_REQUEST_TYPEHASH = keccak256(
         "ExecutionRequest(Call[] calls,uint256 nonce,uint256 deadline)Call(address target,uint256 value,bytes data)"
@@ -103,7 +101,7 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     function buildSessionConfig(
         uint256 sessionKeyPk,
         address target,
-        bytes4  selector,
+        bytes4 selector,
         address tokenIn,
         address tokenOut,
         uint256 maxAmount,
@@ -111,15 +109,15 @@ abstract contract SessionKeyHelper is EIP7702Helper {
         uint256 maxCalls
     ) internal view returns (SessionConfig memory config) {
         config = SessionConfig({
-            sessionKey:  vm.addr(sessionKeyPk),
-            target:      target,
-            selector:    selector,
-            tokenIn:     tokenIn,
-            tokenOut:    tokenOut,
-            maxAmount:   maxAmount,
-            validAfter:  uint48(block.timestamp),
-            validUntil:  uint48(block.timestamp + duration),
-            maxCalls:    maxCalls
+            sessionKey: vm.addr(sessionKeyPk),
+            target: target,
+            selector: selector,
+            tokenIn: tokenIn,
+            tokenOut: tokenOut,
+            maxAmount: maxAmount,
+            validAfter: uint48(block.timestamp),
+            validUntil: uint48(block.timestamp + duration),
+            maxCalls: maxCalls
         });
     }
 
@@ -136,17 +134,17 @@ abstract contract SessionKeyHelper is EIP7702Helper {
         uint256 deadline
     ) internal pure returns (ExecutionRequest memory req) {
         Call[] memory calls = new Call[](1);
-        calls[0] = Call({target: target, value: value, data: data});
-        req = ExecutionRequest({calls: calls, nonce: nonce, deadline: deadline});
+        calls[0] = Call({ target: target, value: value, data: data });
+        req = ExecutionRequest({ calls: calls, nonce: nonce, deadline: deadline });
     }
 
     /// @notice Builds a multi-call (batch) ExecutionRequest.
-    function buildBatchExecutionRequest(
-        Call[] memory calls,
-        uint256 nonce,
-        uint256 deadline
-    ) internal pure returns (ExecutionRequest memory req) {
-        req = ExecutionRequest({calls: calls, nonce: nonce, deadline: deadline});
+    function buildBatchExecutionRequest(Call[] memory calls, uint256 nonce, uint256 deadline)
+        internal
+        pure
+        returns (ExecutionRequest memory req)
+    {
+        req = ExecutionRequest({ calls: calls, nonce: nonce, deadline: deadline });
     }
 
     // -------------------------------------------------------------------------
@@ -158,32 +156,26 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     /// @param sessionKeyPk  Private key of the session key.
     /// @param req           The execution request to sign.
     /// @return              A fully populated SignedExecutionRequest.
-    function signExecutionRequest(
-        uint256 sessionKeyPk,
-        ExecutionRequest memory req
-    ) internal pure returns (SignedExecutionRequest memory) {
+    function signExecutionRequest(uint256 sessionKeyPk, ExecutionRequest memory req)
+        internal
+        pure
+        returns (SignedExecutionRequest memory)
+    {
         bytes32 hash = _hashExecutionRequestRaw(req);
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sessionKeyPk, hash);
-        return SignedExecutionRequest({req: req, v: v, r: r, s: s});
+        return SignedExecutionRequest({ req: req, v: v, r: r, s: s });
     }
 
     /// @notice Returns the raw keccak256 hash of an ExecutionRequest.
-    function _hashExecutionRequestRaw(
-        ExecutionRequest memory req
-    ) internal pure returns (bytes32) {
+    function _hashExecutionRequestRaw(ExecutionRequest memory req) internal pure returns (bytes32) {
         bytes32[] memory callHashes = new bytes32[](req.calls.length);
         for (uint256 i = 0; i < req.calls.length; i++) {
-            callHashes[i] = keccak256(abi.encode(
-                req.calls[i].target,
-                req.calls[i].value,
-                keccak256(req.calls[i].data)
-            ));
+            callHashes[i] = keccak256(
+                abi.encode(req.calls[i].target, req.calls[i].value, keccak256(req.calls[i].data))
+            );
         }
-        return keccak256(abi.encode(
-            keccak256(abi.encodePacked(callHashes)),
-            req.nonce,
-            req.deadline
-        ));
+        return
+            keccak256(abi.encode(keccak256(abi.encodePacked(callHashes)), req.nonce, req.deadline));
     }
 
     // -------------------------------------------------------------------------
@@ -203,62 +195,68 @@ abstract contract SessionKeyHelper is EIP7702Helper {
         bytes32 structHash = _hashExecutionRequest712(req);
         bytes32 digest = keccak256(abi.encodePacked(hex"1901", domainSeparator, structHash));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(sessionKeyPk, digest);
-        return SignedExecutionRequest({req: req, v: v, r: r, s: s});
+        return SignedExecutionRequest({ req: req, v: v, r: r, s: s });
     }
 
     /// @notice Builds an EIP-712 domain separator for a verifying contract.
     /// @param name        Protocol name (e.g. "MyWallet").
     /// @param version     Protocol version (e.g. "1").
     /// @param verifier    The contract that will verify the signature (usually the EOA).
-    function buildDomainSeparator(
-        string memory name,
-        string memory version,
-        address verifier
-    ) internal view returns (bytes32) {
-        return keccak256(abi.encode(
-            _DOMAIN_TYPEHASH,
-            keccak256(bytes(name)),
-            keccak256(bytes(version)),
-            block.chainid,
-            verifier
-        ));
+    function buildDomainSeparator(string memory name, string memory version, address verifier)
+        internal
+        view
+        returns (bytes32)
+    {
+        return keccak256(
+            abi.encode(
+                _DOMAIN_TYPEHASH,
+                keccak256(bytes(name)),
+                keccak256(bytes(version)),
+                block.chainid,
+                verifier
+            )
+        );
     }
 
     /// @notice Returns the EIP-712 struct hash of an ExecutionRequest.
-    function _hashExecutionRequest712(
-        ExecutionRequest memory req
-    ) internal pure returns (bytes32) {
+    function _hashExecutionRequest712(ExecutionRequest memory req) internal pure returns (bytes32) {
         bytes32[] memory callHashes = new bytes32[](req.calls.length);
         for (uint256 i = 0; i < req.calls.length; i++) {
-            callHashes[i] = keccak256(abi.encode(
-                _CALL_TYPEHASH,
-                req.calls[i].target,
-                req.calls[i].value,
-                keccak256(req.calls[i].data)
-            ));
+            callHashes[i] = keccak256(
+                abi.encode(
+                    _CALL_TYPEHASH,
+                    req.calls[i].target,
+                    req.calls[i].value,
+                    keccak256(req.calls[i].data)
+                )
+            );
         }
-        return keccak256(abi.encode(
-            _EXECUTION_REQUEST_TYPEHASH,
-            keccak256(abi.encodePacked(callHashes)),
-            req.nonce,
-            req.deadline
-        ));
+        return keccak256(
+            abi.encode(
+                _EXECUTION_REQUEST_TYPEHASH,
+                keccak256(abi.encodePacked(callHashes)),
+                req.nonce,
+                req.deadline
+            )
+        );
     }
 
     /// @notice Returns the EIP-712 struct hash of a SessionConfig.
     function hashSessionConfig(SessionConfig memory config) internal pure returns (bytes32) {
-        return keccak256(abi.encode(
-            _SESSION_CONFIG_TYPEHASH,
-            config.sessionKey,
-            config.target,
-            config.selector,
-            config.tokenIn,
-            config.tokenOut,
-            config.maxAmount,
-            config.validAfter,
-            config.validUntil,
-            config.maxCalls
-        ));
+        return keccak256(
+            abi.encode(
+                _SESSION_CONFIG_TYPEHASH,
+                config.sessionKey,
+                config.target,
+                config.selector,
+                config.tokenIn,
+                config.tokenOut,
+                config.maxAmount,
+                config.validAfter,
+                config.validUntil,
+                config.maxCalls
+            )
+        );
     }
 
     // -------------------------------------------------------------------------
@@ -266,10 +264,11 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     // -------------------------------------------------------------------------
 
     /// @notice Encodes a single call into bytes for use in ExecutionRequest.
-    function encodeExecution(
-        address target,
-        bytes memory data
-    ) internal pure returns (bytes memory) {
+    function encodeExecution(address target, bytes memory data)
+        internal
+        pure
+        returns (bytes memory)
+    {
         return abi.encode(target, data);
     }
 
@@ -293,18 +292,17 @@ abstract contract SessionKeyHelper is EIP7702Helper {
     }
 
     /// @notice Recovers the signer address from a raw-signed ExecutionRequest.
-    function recoverSigner(
-        SignedExecutionRequest memory signed
-    ) internal pure returns (address) {
+    function recoverSigner(SignedExecutionRequest memory signed) internal pure returns (address) {
         bytes32 hash = _hashExecutionRequestRaw(signed.req);
         return ecrecover(hash, signed.v, signed.r, signed.s);
     }
 
     /// @notice Recovers the signer address from an EIP-712 signed ExecutionRequest.
-    function recoverSigner712(
-        SignedExecutionRequest memory signed,
-        bytes32 domainSeparator
-    ) internal pure returns (address) {
+    function recoverSigner712(SignedExecutionRequest memory signed, bytes32 domainSeparator)
+        internal
+        pure
+        returns (address)
+    {
         bytes32 structHash = _hashExecutionRequest712(signed.req);
         bytes32 digest = keccak256(abi.encodePacked(hex"1901", domainSeparator, structHash));
         return ecrecover(digest, signed.v, signed.r, signed.s);

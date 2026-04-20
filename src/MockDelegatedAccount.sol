@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.20;
 
-import {EIP7702Helper} from "./EIP7702Helper.sol";
+import { EIP7702Helper } from "./EIP7702Helper.sol";
 
 /// @title MockDelegatedAccount
 /// @notice A drop-in mock EOA for tests that don't need real private keys.
@@ -24,7 +24,6 @@ import {EIP7702Helper} from "./EIP7702Helper.sol";
 ///       }
 ///   }
 contract MockDelegatedAccount is EIP7702Helper {
-
     // -------------------------------------------------------------------------
     // State
     // -------------------------------------------------------------------------
@@ -89,11 +88,10 @@ contract MockDelegatedAccount is EIP7702Helper {
     /// @param data    Calldata to send.
     /// @param value   ETH to send with the call.
     /// @return        Raw return bytes.
-    function executeAs(
-        address target,
-        bytes calldata data,
-        uint256 value
-    ) external returns (bytes memory) {
+    function executeAs(address target, bytes calldata data, uint256 value)
+        external
+        returns (bytes memory)
+    {
         return executeAs(_pk, target, data, value);
     }
 

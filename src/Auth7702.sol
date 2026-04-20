@@ -8,7 +8,6 @@ pragma solidity >=0.8.20;
 ///           hash = keccak256(0x05 ++ rlp([chainId, address, nonce]))
 ///         This is distinct from EIP-712 and standard transaction signing.
 library Auth7702 {
-
     // -------------------------------------------------------------------------
     // Constants
     // -------------------------------------------------------------------------
@@ -56,11 +55,11 @@ library Auth7702 {
     }
 
     /// @notice Convenience overload — hash directly from components.
-    function hashAuthorization(
-        uint256 chainId,
-        address logicContract,
-        uint256 nonce
-    ) internal pure returns (bytes32) {
+    function hashAuthorization(uint256 chainId, address logicContract, uint256 nonce)
+        internal
+        pure
+        returns (bytes32)
+    {
         return hashAuthorization(Authorization(chainId, logicContract, nonce));
     }
 
@@ -69,14 +68,14 @@ library Auth7702 {
     // -------------------------------------------------------------------------
 
     /// @dev RLP-encodes the three-element list [chainId, address, nonce].
-    function _rlpEncodeAuthorization(
-        uint256 chainId,
-        address logicContract,
-        uint256 nonce
-    ) private pure returns (bytes memory) {
+    function _rlpEncodeAuthorization(uint256 chainId, address logicContract, uint256 nonce)
+        private
+        pure
+        returns (bytes memory)
+    {
         bytes memory encodedChainId = _rlpEncodeUint(chainId);
         bytes memory encodedAddress = _rlpEncodeAddress(logicContract);
-        bytes memory encodedNonce   = _rlpEncodeUint(nonce);
+        bytes memory encodedNonce = _rlpEncodeUint(nonce);
 
         uint256 payloadLen = encodedChainId.length + encodedAddress.length + encodedNonce.length;
         bytes memory listPrefix = _rlpListPrefix(payloadLen);

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.20;
 
-import {Test} from "forge-std/Test.sol";
-import {Auth7702} from "./Auth7702.sol";
+import { Test } from "forge-std/Test.sol";
+import { Auth7702 } from "./Auth7702.sol";
 
 /// @title EIP7702Helper
 /// @notice Core helper contract for testing EIP-7702 delegation in Foundry.
@@ -10,7 +10,6 @@ import {Auth7702} from "./Auth7702.sol";
 /// @dev    Inheritance chain:
 ///           forge-std/Test  ←  EIP7702Helper  ←  YourTest
 abstract contract EIP7702Helper is Test {
-
     // -------------------------------------------------------------------------
     // Delegation
     // -------------------------------------------------------------------------
@@ -92,28 +91,25 @@ abstract contract EIP7702Helper is Test {
     /// @param nonce    Current nonce of the EOA.
     /// @param chainId  Chain ID (pass 0 for chain-agnostic).
     /// @return         A fully populated SignedAuthorization.
-    function signAuthorization(
-        uint256 pk,
-        address logic,
-        uint256 nonce,
-        uint256 chainId
-    ) internal pure returns (Auth7702.SignedAuthorization memory) {
+    function signAuthorization(uint256 pk, address logic, uint256 nonce, uint256 chainId)
+        internal
+        pure
+        returns (Auth7702.SignedAuthorization memory)
+    {
         Auth7702.Authorization memory auth = Auth7702.Authorization({
-            chainId: chainId,
-            logicContract: logic,
-            nonce: nonce
+            chainId: chainId, logicContract: logic, nonce: nonce
         });
         bytes32 hash = Auth7702.hashAuthorization(auth);
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(pk, hash);
-        return Auth7702.SignedAuthorization({auth: auth, v: v, r: r, s: s});
+        return Auth7702.SignedAuthorization({ auth: auth, v: v, r: r, s: s });
     }
 
     /// @notice Convenience overload — uses block.chainid automatically.
-    function signAuthorization(
-        uint256 pk,
-        address logic,
-        uint256 nonce
-    ) internal view returns (Auth7702.SignedAuthorization memory) {
+    function signAuthorization(uint256 pk, address logic, uint256 nonce)
+        internal
+        view
+        returns (Auth7702.SignedAuthorization memory)
+    {
         return signAuthorization(pk, logic, nonce, block.chainid);
     }
 
@@ -127,11 +123,10 @@ abstract contract EIP7702Helper is Test {
     /// @param target  Contract to call.
     /// @param data    Calldata to send.
     /// @return ret    Raw return bytes.
-    function executeAs(
-        uint256 pk,
-        address target,
-        bytes memory data
-    ) internal returns (bytes memory ret) {
+    function executeAs(uint256 pk, address target, bytes memory data)
+        internal
+        returns (bytes memory ret)
+    {
         address eoa = vm.addr(pk);
         require(isDelegated(eoa), "EIP7702Helper: EOA is not delegated");
         vm.prank(eoa);
@@ -141,17 +136,15 @@ abstract contract EIP7702Helper is Test {
     }
 
     /// @notice Same as executeAs but with ETH value.
-    function executeAs(
-        uint256 pk,
-        address target,
-        bytes memory data,
-        uint256 value
-    ) internal returns (bytes memory ret) {
+    function executeAs(uint256 pk, address target, bytes memory data, uint256 value)
+        internal
+        returns (bytes memory ret)
+    {
         address eoa = vm.addr(pk);
         require(isDelegated(eoa), "EIP7702Helper: EOA is not delegated");
         vm.deal(eoa, eoa.balance + value);
         vm.prank(eoa);
-        (bool ok, bytes memory result) = target.call{value: value}(data);
+        (bool ok, bytes memory result) = target.call{ value: value }(data);
         require(ok, "EIP7702Helper: call failed");
         return result;
     }
