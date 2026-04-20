@@ -120,8 +120,8 @@ contract EIP7702HelperTest is Test, SessionKeyHelper {
         address eoa = delegate(OWNER_PK, address(simpleLogic));
         bytes memory code = eoa.code;
        assertEq(code[0], bytes1(0xef));
-        assertEq(code[1], 0x01);
-        assertEq(code[2], 0x00);
+        assertEq(code[1], bytes1(0x01));
+        assertEq(code[2], bytes1(0x00));
     }
 
     function test_delegate_revertsOnZeroAddress() public {
